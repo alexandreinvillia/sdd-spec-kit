@@ -1,0 +1,116 @@
+
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                    🚀 GitHub Spec Kit - Dev Container 🚀                      ║
+║                                                                                ║
+║                    Leitor de Feed RSS com ASP.NET Core + Blazor                ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+✨ Bem-vindo ao Dev Container!
+
+Este container inclui todas as ferramentas necessárias para desenvolver a aplicação
+de Leitor RSS usando a metodologia Spec-Driven Development com GitHub Spec Kit.
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+📦 FERRAMENTAS INSTALADAS:
+
+  ✓ .NET SDK 8.0+           - Backend ASP.NET Core
+  ✓ Blazor WebAssembly      - Frontend SPA
+  ✓ Python 3.11+            - Automações e scripts
+  ✓ Node.js + npm           - Ferramentas de build
+  ✓ Specify CLI             - GitHub Spec Kit
+  ✓ Git 2.48+               - Controle de versão
+  ✓ uv                      - Gerenciador de pacotes Python
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+🎯 PRÓXIMOS PASSOS:
+
+1. INICIALIZAR GITHUB SPEC KIT (primeira vez apenas):
+  $ specify init --here --force --ai copilot --script sh
+
+2. GERAR DOCUMENTAÇÃO COM SPEC KIT:
+   $ /speckit.constitution
+   $ /speckit.spec
+   $ /speckit.plan
+   $ /speckit.tasks
+
+3. CRIAR PROJETOS .NET:
+   $ dotnet new globaljson --sdk-version 8.0.0
+   $ dotnet new solution -n RSSFeedReader
+   $ dotnet new webapi -n RSSFeedReader.Api -na RSSFeedReader.Api --no-https
+   $ dotnet new blazorwasm -n RSSFeedReader.UI -na RSSFeedReader.UI --no-https
+   $ dotnet sln add RSSFeedReader.Api/RSSFeedReader.Api.csproj
+   $ dotnet sln add RSSFeedReader.UI/RSSFeedReader.UI.csproj
+
+4. RESTAURAR DEPENDÊNCIAS:
+   $ dotnet restore
+
+5. EXECUTAR A APLICAÇÃO:
+   Backend:
+   $ cd RSSFeedReader.Api && dotnet run
+
+   Frontend (em outro terminal):
+   $ cd RSSFeedReader.UI && dotnet watch run
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+🌐 PORTAS EXPOSTAS:
+
+  Port 5000  → Backend API (HTTP)
+  Port 5001  → Backend API (HTTPS)
+  Port 7000  → Frontend Blazor (HTTP)
+  Port 7001  → Frontend Blazor (HTTPS)
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+📂 ESTRUTURA DO PROJETO:
+
+  .devcontainer/           → Dev Container configuration
+  StakeholderDocuments/    → Documentação do stakeholder
+  .specify/                → GitHub Spec Kit configuration
+  .github/
+    ├── agents/            → Workflows do Spec Kit
+    └── prompts/           → Prompts para Spec Kit
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+📚 DOCUMENTAÇÃO:
+
+  GitHub Spec Kit:  https://github.com/github/spec-kit-starter
+  .NET 8:           https://learn.microsoft.com/dotnet
+  Blazor WebAssembly: https://learn.microsoft.com/aspnet/core/blazor/
+  ASP.NET Core:     https://learn.microsoft.com/aspnet/core/
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+🆘 TROUBLESHOOTING:
+
+  ❓ "Specify CLI not found"
+    → uv tool install --force --python python3.11 specify-cli --from git+https://github.com/github/spec-kit.git@v0.7.0
+
+  ❓ ".NET command not found"
+    → Verifique se o container foi reconstruído: Ctrl+Shift+P > Rebuild Container
+
+  ❓ Port já em uso
+    → Configure portas diferentes em .devcontainer/devcontainer.json
+
+  ❓ Problemas com Git
+    → Execute: git config user.email "seu@email.com" && git config user.name "Seu Nome"
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+💡 DICAS:
+
+  • Use "dotnet watch run" para hot reload durante desenvolvimento
+  • GitHub Copilot Chat está disponível via Copilot Chat extension
+  • Todos os ports estão automaticamente forwarded para sua máquina local
+  • No Codespaces, o repositório abre diretamente em /workspaces/<repositorio>
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+Pronto para começar? Confirme o ambiente com: dotnet --version && specify version && uv --version
+Depois siga o README do repositório para iniciar o exercício
+
+✨ Happy Coding! ✨
+

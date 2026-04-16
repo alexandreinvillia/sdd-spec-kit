@@ -1,0 +1,129 @@
+name: Step 2
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "StakeholderDocuments/**"
+      - ".specify/memory/constitution.md"
+
+permissions:
+  contents: write
+  actions: write
+  issues: write
+
+env:
+  STEP_FILE: ".github/steps/3-step.md"
+
+jobs:
+
+  find_exercise:
+    if: github.actor != 'github-actions[bot]'
+    name: Encontrar Issue do Exercício
+    uses: skills/exercise-toolkit/.github/workflows/find-exercise-issue.yml@v0.8.1
+
+  validate_step:
+    name: Validate Step 2 Completion
+    runs-on: ubuntu-latest
+    needs: [find_exercise]
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v6
+
+      - name: Verificar pasta StakeholderDocuments
+        id: check-stakeholder-docs
+        run: |
+          # Verificar se a pasta StakeholderDocuments existe
+          if [ -d "StakeholderDocuments" ]; then
+            echo "✅ Pasta StakeholderDocuments encontrada"
+            
+            # Verificar se os arquivos necessários existem
+            required_files=("ProjectGoals.md" "AppFeatures.md" "TechStack.md")
+            all_found=true
+            
+            for file in "${required_files[@]}"; do
+              if [ -f "StakeholderDocuments/$file" ]; then
+                echo "✅ StakeholderDocuments/$file encontrado"
+              else
+                echo "❌ StakeholderDocuments/$file NAO encontrado"
+                all_found=false
+              fi
+            done
+            
+            if [ "$all_found" = true ]; then
+              echo "stakeholder_docs_ready=true" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "❌ Pasta StakeholderDocuments nao encontrada"
+            echo "stakeholder_docs_ready=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Verificar arquivo constitution.md
+        id: check-constitution
+        run: |
+          # Verificar se o arquivo constitution.md foi gerado
+          if [ -f ".specify/memory/constitution.md" ]; then
+            echo "✅ Arquivo constitution.md encontrado"
+            
+            # Verificar se o arquivo não está vazio
+            if [ -s ".specify/memory/constitution.md" ]; then
+              echo "✅ constitution.md possui conteudo"
+              echo "constitution_generated=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "⚠️ constitution.md parece estar vazio"
+              echo "constitution_generated=false" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "❌ Arquivo constitution.md nao encontrado"
+            echo "constitution_generated=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  post_next_step_content:
+    name: Postar conteúdo do próximo passo
+    runs-on: ubuntu-latest
+    needs: [find_exercise, validate_step]
+    env:
+      ISSUE_NUMBER: ${{ needs.find_exercise.outputs.issue-number }}
+      ISSUE_REPOSITORY: ${{ github.repository }}
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v5
+
+      - name: Obter templates de resposta
+        uses: actions/checkout@v5
+        with:
+          repository: skills/exercise-toolkit
+          path: exercise-toolkit
+          ref: v0.8.1
+
+      - name: Encontrar último comentário
+        id: find-last-comment
+        uses: peter-evans/find-comment@v3
+        with:
+          repository: ${{ env.ISSUE_REPOSITORY }}
+          issue-number: ${{ env.ISSUE_NUMBER }}
+          direction: last
+
+      - name: Atualizar comentário - verificando trabalho
+        uses: GrantBirki/comment@v2.1.1
+        with:
+          repository: ${{ env.ISSUE_REPOSITORY }}
+          issue-number: ${{ env.ISSUE_NUMBER }}
+          file: ${{ env.STEP_FILE }}
+          vars: |
+            full_repo_name: ${{ github.repository }}
+
+      - name: Habilitar workflow do próximo passo
+        run: |
+          gh workflow enable "Step 3"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Desabilitar workflow atual
+        run: gh workflow disable "${{ github.workflow }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

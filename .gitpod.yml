@@ -1,0 +1,73 @@
+tasks:
+  - name: Setup IDE & Dependencies
+    init: |
+      echo "📦 Instalando dependências..."
+      dotnet restore
+      npm install -g @github-spec-kit/specify-cli
+      echo "✅ Dependências instaladas!"
+      
+  - name: Initialize Spec Kit
+    init: |
+      echo "📋 Inicializando GitHub Spec Kit..."
+      specify init --here --ai copilot --script sh
+      echo "✅ GitHub Spec Kit inicializado!"
+
+  - name: Prepare Project Structure
+    init: |
+      echo "🔨 Preparando estrutura de projeto..."
+      mkdir -p StakeholderDocuments
+      [ -f docs/ProjectGoals.md ] && cp docs/ProjectGoals.md StakeholderDocuments/
+      [ -f docs/AppFeatures.md ] && cp docs/AppFeatures.md StakeholderDocuments/
+      [ -f docs/TechStack.md ] && cp docs/TechStack.md StakeholderDocuments/
+      echo "✅ Estrutura preparada!"
+
+vscode:
+  extensions:
+    # C# and .NET
+    - ms-dotnettools.csharp
+    - ms-dotnettools.vscode-dotnet-runtime
+    - ms-dotnettools.blazorwasm-companion
+    
+    # GitHub Copilot
+    - GitHub.copilot
+    - GitHub.copilot-chat
+    
+    # Git and GitHub
+    - eamodio.gitlens
+    - GitHub.vscode-pull-request-github
+    
+    # Development Tools
+    - ms-vscode.makefile-tools
+    - ms-vscode.powershell
+    - humao.rest-client
+    
+    # Frontend/Web
+    - esbenp.prettier-vscode
+    - dbaeumer.vscode-eslint
+    
+    # Markdown
+    - yzhang.markdown-all-in-one
+    - DavidAnson.vscode-markdownlint
+    
+    # Docker
+    - ms-azuretools.vscode-docker
+    
+    # Theme
+    - GitHub.github-vscode-theme
+
+  settings:
+    editor.formatOnSave: true
+    editor.defaultFormatter: esbenp.prettier-vscode
+    editor.rulers:
+      - 80
+      - 120
+    dotnet.defaultSolutionOrFolder: "."
+    omnisharp.enableRoslynAnalyzers: true
+    omnisharp.organizeImportsOnFormat: true
+    markdown.preview.breaks: true
+    files.watcherExclude:
+      "**/.git/objects/**": true
+      "**/.git/subtree-cache/**": true
+      "**/node_modules/*/**": true
+      "**/bin/**": true
+      "**/obj/**": true

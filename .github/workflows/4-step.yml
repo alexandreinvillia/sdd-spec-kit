@@ -1,0 +1,116 @@
+name: Step 4
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "specs/**/plan.md"
+
+permissions:
+  contents: write
+  actions: write
+  issues: write
+
+env:
+  STEP_FILE: ".github/steps/5-step.md"
+
+jobs:
+  find_exercise:
+    if: github.actor != 'github-actions[bot]'
+    name: Encontrar Issue do Exercício
+    uses: skills/exercise-toolkit/.github/workflows/find-exercise-issue.yml@v0.8.1
+
+  validate_step:
+    name: Validate Step 4 Completion
+    runs-on: ubuntu-latest
+    needs: [find_exercise]
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v6
+
+      - name: Verificar arquivo plan.md e arquivos relacionados
+        id: check-plan
+        run: |
+          # Verificar se o arquivo plan.md foi gerado
+          plan_found=false
+          if [ -f "plan.md" ]; then
+            plan_found=true
+            plan_file="plan.md"
+          elif [ -f "specs/**/plan.md" ]; then
+            plan_found=true
+            plan_file="specs/**/plan.md"
+          fi
+          
+          if [ "$plan_found" = true ]; then
+            echo "✅ Arquivo plan.md encontrado"
+            
+            if [ -s "$plan_file" ]; then
+              echo "✅ plan.md possui conteudo"
+            else
+              echo "⚠️ plan.md parece estar vazio"
+            fi
+          else
+            echo "❌ Arquivo plan.md nao encontrado"
+          fi
+          
+          # Verificar se os arquivos auxiliares foram criados
+          auxiliary_files=("research.md" "quickstart.md" "data-model.md")
+          for file in "${auxiliary_files[@]}"; do
+            if [ -f "$file" ] || [ -f ".specific/$file" ]; then
+              echo "✅ $file encontrado"
+            else
+              echo "⚠️ $file nao encontrado (opcional)"
+            fi
+          done
+          
+          echo "plan_generated=true" >> "$GITHUB_OUTPUT"
+
+  post_next_step_content:
+    name: Postar conteúdo do próximo passo
+    runs-on: ubuntu-latest
+    needs: [find_exercise, validate_step]
+    env:
+      ISSUE_NUMBER: ${{ needs.find_exercise.outputs.issue-number }}
+      ISSUE_REPOSITORY: ${{ github.repository }}
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v5
+
+      - name: Obter templates de resposta
+        uses: actions/checkout@v5
+        with:
+          repository: skills/exercise-toolkit
+          path: exercise-toolkit
+          ref: v0.8.1
+
+      - name: Encontrar último comentário
+        id: find-last-comment
+        uses: peter-evans/find-comment@v3
+        with:
+          repository: ${{ env.ISSUE_REPOSITORY }}
+          issue-number: ${{ env.ISSUE_NUMBER }}
+          direction: last
+
+      - name: Atualizar comentário - verificando trabalho
+        uses: GrantBirki/comment@v2.1.1
+        with:
+          repository: ${{ env.ISSUE_REPOSITORY }}
+          issue-number: ${{ env.ISSUE_NUMBER }}
+          file: ${{ env.STEP_FILE }}
+          vars: |
+            full_repo_name: ${{ github.repository }}
+
+      - name: Habilitar workflow do próximo passo
+        run: |
+          gh workflow enable "Step 5"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Desabilitar workflow atual
+        run: gh workflow disable "${{ github.workflow }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,107 @@
+name: Step 3
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "StakeholderDocuments/**"
+      - "specs/**/spec.md"
+
+permissions:
+  contents: write
+  actions: write
+  issues: write
+
+env:
+  STEP_FILE: ".github/steps/4-step.md"
+
+jobs:
+  find_exercise:
+    if: github.actor != 'github-actions[bot]'
+    name: Encontrar Issue do Exercício
+    uses: skills/exercise-toolkit/.github/workflows/find-exercise-issue.yml@v0.8.1
+
+  validate_step:
+    name: Validate Step 3 Completion
+    runs-on: ubuntu-latest
+    needs: [find_exercise]
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v6
+
+      - name: Verificar arquivo spec.md
+        id: check-spec
+        run: |
+          # Verificar se o arquivo spec.md foi gerado
+          if [ -f ".specific/memory/spec.md" ] || [ -f "spec.md" ]; then
+            echo "✅ Arquivo spec.md encontrado"
+            
+            # Verificar qual arquivo existe e validar conteúdo
+            spec_file=""
+            if [ -f "spec.md" ]; then
+              spec_file="spec.md"
+            elif [ -f ".specific/memory/spec.md" ]; then
+              spec_file=".specific/memory/spec.md"
+            fi
+            
+            if [ -s "$spec_file" ]; then
+              echo "✅ spec.md possui conteudo"
+              echo "spec_generated=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "⚠️ spec.md parece estar vazio"
+              echo "spec_generated=false" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "❌ Arquivo spec.md nao encontrado nos locais esperados"
+            echo "spec_generated=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  post_next_step_content:
+    name: Postar conteúdo do próximo passo
+    runs-on: ubuntu-latest
+    needs: [find_exercise, validate_step]
+    env:
+      ISSUE_NUMBER: ${{ needs.find_exercise.outputs.issue-number }}
+      ISSUE_REPOSITORY: ${{ github.repository }}
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v5
+
+      - name: Obter templates de resposta
+        uses: actions/checkout@v5
+        with:
+          repository: skills/exercise-toolkit
+          path: exercise-toolkit
+          ref: v0.8.1
+
+      - name: Encontrar último comentário
+        id: find-last-comment
+        uses: peter-evans/find-comment@v3
+        with:
+          repository: ${{ env.ISSUE_REPOSITORY }}
+          issue-number: ${{ env.ISSUE_NUMBER }}
+          direction: last
+
+      - name: Atualizar comentário - verificando trabalho
+        uses: GrantBirki/comment@v2.1.1
+        with:
+          repository: ${{ env.ISSUE_REPOSITORY }}
+          issue-number: ${{ env.ISSUE_NUMBER }}
+          file: ${{ env.STEP_FILE }}
+          vars: |
+            full_repo_name: ${{ github.repository }}
+
+      - name: Habilitar workflow do próximo passo
+        run: |
+          gh workflow enable "Step 4"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Desabilitar workflow atual
+        run: gh workflow disable "${{ github.workflow }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

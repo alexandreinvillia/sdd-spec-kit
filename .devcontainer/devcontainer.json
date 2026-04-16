@@ -1,0 +1,126 @@
+{
+  "name": "GitHub Spec Kit - Leitor RSS",
+  "description": "Dev container para desenvolvimento de uma aplicação de Leitor RSS usando GitHub Spec Kit com ASP.NET Core e Blazor",
+  
+  // Imagem base com .NET 8.0 — Python 3.11 e Node.js provisionados via devcontainer features
+  // (evita Docker build customizado que pode falhar no Codespaces)
+  "image": "mcr.microsoft.com/devcontainers/dotnet:8.0-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.11",
+      "installTools": true
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts"
+    }
+  },
+
+  // Configurações de inicialização
+  "remoteUser": "vscode",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+
+  // Portas para expor (backend API + frontend Blazor)
+  "forwardPorts": [5000, 5001, 7000, 7001],
+  "portsAttributes": {
+    "5000": {
+      "label": "Backend API (HTTP)",
+      "onAutoForward": "notify"
+    },
+    "5001": {
+      "label": "Backend API (HTTPS)",
+      "onAutoForward": "notify"
+    },
+    "7000": {
+      "label": "Frontend (HTTP)",
+      "onAutoForward": "notify"
+    },
+    "7001": {
+      "label": "Frontend (HTTPS)",
+      "onAutoForward": "notify"
+    }
+  },
+
+  // Variáveis de ambiente
+  "remoteEnv": {
+    "DOTNET_USE_POLLING_FILE_WATCHER": "true",
+    "PATH": "${containerEnv:PATH}:/home/vscode/.local/bin"
+  },
+
+  // Configurações do VS Code aplicadas no container
+  "customizations": {
+    "vscode": {
+      "settings": {
+        // Editor
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.rulers": [80, 120],
+        
+        // .NET e C#
+        "omnisharp.enableRoslynAnalyzers": true,
+        "omnisharp.organize Imports On Format": true,
+        
+        // Markdown
+        "markdown.preview.breaks": true,
+        
+        // Git
+        "git.ignoreLimitWarning": true,
+        "gitlens.advanced.messages": {
+          "suppressGitMissingWarning": false
+        },
+        
+        // Files
+        "files.watcherExclude": {
+          "**/.git/objects/**": true,
+          "**/.git/subtree-cache/**": true,
+          "**/node_modules/*/**": true,
+          "**/bin/**": true,
+          "**/obj/**": true,
+          "**/.vscode/**": true
+        },
+        
+        // Search
+        "search.exclude": {
+          "**/node_modules": true,
+          "**/bin": true,
+          "**/obj": true,
+          ".git": true
+        }
+      },
+      "extensions": [
+        "ms-dotnettools.csharp",
+        "ms-dotnettools.vscode-dotnet-runtime",
+        "ms-dotnettools.blazorwasm-companion",
+        "github.copilot",
+        "github.copilot-chat",
+        "eamodio.gitlens",
+        "github.vscode-pull-request-github",
+        "ms-vscode.makefile-tools",
+        "ms-vscode.powershell",
+        "humao.rest-client",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "yzhang.markdown-all-in-one",
+        "DavidAnson.vscode-markdownlint",
+        "ms-azuretools.vscode-docker",
+        "github.github-vscode-theme",
+        "ms-vscode.theme-materialkind"
+      ]
+    },
+    "codespaces": {
+      "openFiles": [
+        "README.md",
+        ".devcontainer/README.md"
+      ]
+    }
+  },
+
+  // Scripts executados após a criação do container
+  "postCreateCommand": "bash ${containerWorkspaceFolder}/.devcontainer/post-create.sh",
+
+  // Mensagem de boas-vindas
+  "postStartCommand": "clear && cat ${containerWorkspaceFolder}/.devcontainer/WELCOME.txt || echo '✅ Dev container iniciado com sucesso!'",
+
+  // Configurações de segurança
+  "capAdd": ["SYS_PTRACE"],
+  "securityOpt": ["seccomp=unconfined"]
+}

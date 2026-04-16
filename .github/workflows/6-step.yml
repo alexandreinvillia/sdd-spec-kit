@@ -1,0 +1,103 @@
+name: Step 6
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "src/**"
+
+permissions:
+  contents: write
+  actions: write
+  issues: write
+
+env:
+  REVIEW_FILE: ".github/steps/x-review.md"
+
+jobs:
+  find_exercise:
+    if: github.actor != 'github-actions[bot]'
+    name: Encontrar Issue do Exercício
+    uses: skills/exercise-toolkit/.github/workflows/find-exercise-issue.yml@v0.8.1
+
+
+  validate_step:
+    name: Validate Step 6 Completion
+    runs-on: ubuntu-latest
+    needs: [find_exercise]
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v6
+
+      - name: Verificar status da implementação
+        id: check-implementation
+        run: |
+          # Verificar se há código fonte implementado
+          source_files=false
+          
+          if [ -d "src" ] && [ "$(find src -type f -name '*.cs' | wc -l)" -gt 0 ]; then
+            echo "✅ Arquivos C# encontrados em src/"
+            source_files=true
+          fi
+          
+          if [ -f "*.csproj" ] || [ "$(find . -maxdepth 1 -type f -name '*.csproj' | wc -l)" -gt 0 ]; then
+            echo "✅ Arquivo de projeto C# encontrado"
+            source_files=true
+          fi
+          
+          if [ "$source_files" = true ]; then
+            echo "implementation_progress=true" >> "$GITHUB_OUTPUT"
+            echo "✅ Arquivos de implementacao detectados"
+          else
+            echo "implementation_progress=false" >> "$GITHUB_OUTPUT"
+            echo "⚠️ Nenhum arquivo de implementacao detectado ainda"
+          fi
+
+  post_review_content:
+    name: Publicar conteúdo da revisão
+    needs: [find_exercise, validate_step]
+    runs-on: ubuntu-latest
+    env:
+      ISSUE_REPOSITORY: ${{ github.repository }}
+      ISSUE_NUMBER: ${{ needs.find_exercise.outputs.issue-number }}
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v5
+
+      - name: Obter templates de resposta
+        uses: actions/checkout@v5
+        with:
+          repository: skills/exercise-toolkit
+          path: exercise-toolkit
+          ref: v0.8.1
+
+      - name: Criar comentário - passo concluído - revisão final a seguir
+        uses: GrantBirki/comment@v2.1.1
+        with:
+          repository: ${{ env.ISSUE_REPOSITORY }}
+          issue-number: ${{ env.ISSUE_NUMBER }}
+          file: exercise-toolkit/markdown-templates/step-feedback/lesson-review.md
+
+      - name: Criar comentário - adicionar conteúdo da revisão
+        uses: GrantBirki/comment@v2.1.1
+        with:
+          repository: ${{ env.ISSUE_REPOSITORY }}
+          issue-number: ${{ env.ISSUE_NUMBER }}
+          file: ${{ env.REVIEW_FILE }}
+
+      - name: Desabilitar workflow atual
+        run: gh workflow disable "${{github.workflow}}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  finish_exercise:
+    name: Finalizar Exercício
+    needs: [find_exercise, validate_step, post_review_content]
+    uses: skills/exercise-toolkit/.github/workflows/finish-exercise.yml@v0.8.1
+    with:
+      issue-url: ${{ needs.find_exercise.outputs.issue-url }}
+      exercise-title: "GitHub Spec Kit desenvolvimento orientado por especificações."

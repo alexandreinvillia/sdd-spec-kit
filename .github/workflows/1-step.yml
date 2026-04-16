@@ -1,0 +1,124 @@
+name: Step 1
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/agents/**"
+      - ".specific/**"
+
+permissions:
+  contents: write
+  actions: write
+  issues: write
+
+env:
+  STEP_FILE: ".github/steps/2-step.md"
+  SPECIFY_INIT_SUCCESS: "false"
+
+jobs:
+
+  find_exercise:
+    if: github.actor != 'github-actions[bot]'
+    name: Encontrar Issue do Exercício
+    uses: skills/exercise-toolkit/.github/workflows/find-exercise-issue.yml@v0.8.1
+
+  validate_step:
+    name: Validate Step 1 Completion
+    runs-on: ubuntu-latest
+    needs: [find_exercise]
+    outputs:
+      issue-number: ${{ needs.find_exercise.outputs.issue-number }}
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v6
+
+      - name: Verificar inicialização do GitHub Spec Kit
+        id: check-speckit
+        run: |
+          # Verificar se a pasta .github/agents existe
+          if [ -d ".github/agents" ]; then
+            echo "✅ pasta .github/agents encontrada"
+            agents_found=true
+          else
+            echo "❌ pasta .github/agents não encontrada"
+            agents_found=false
+          fi
+          
+          # Verificar se a pasta .specific existe
+          if [ -d ".specific" ]; then
+            echo "✅ pasta .specific encontrada"
+            specific_found=true
+          else
+            echo "❌ pasta .specific não encontrada"
+            specific_found=false
+          fi
+          
+          # Verificar se há arquivos de agentes
+          if [ -f ".github/agents"/*.md ]; then
+            echo "✅ arquivos de agentes encontrados"
+            agent_files_found=true
+          else
+            echo "❌ nenhum arquivo de agente encontrado"
+            agent_files_found=false
+          fi
+          
+          # Define o resultado
+          if [ "$agents_found" = true ] && [ "$specific_found" = true ]; then
+            echo "speckit_initialized=true" >> "$GITHUB_OUTPUT"
+            echo "✅ O GitHub Spec Kit parece estar inicializado"
+          else
+            echo "speckit_initialized=false" >> "$GITHUB_OUTPUT"
+            echo "⚠️ O GitHub Spec Kit pode nao estar totalmente inicializado"
+          fi
+
+  post_next_step_content:
+    name: Postar conteúdo do próximo passo
+    runs-on: ubuntu-latest
+    needs: [find_exercise, validate_step]
+    env:
+      ISSUE_NUMBER: ${{ needs.find_exercise.outputs.issue-number }}
+      ISSUE_REPOSITORY: ${{ github.repository }}
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v5
+
+      - name: Obter templates de resposta
+        uses: actions/checkout@v5
+        with:
+          repository: skills/exercise-toolkit
+          path: exercise-toolkit
+          ref: v0.8.1
+
+      - name: Encontrar último comentário
+        id: find-last-comment
+        uses: peter-evans/find-comment@v3
+        with:
+          repository: ${{ env.ISSUE_REPOSITORY }}
+          issue-number: ${{ env.ISSUE_NUMBER }}
+          direction: last
+
+      - name: Atualizar comentário - verificando trabalho
+        uses: GrantBirki/comment@v2.1.1
+        with:
+          repository: ${{ env.ISSUE_REPOSITORY }}
+          issue-number: ${{ env.ISSUE_NUMBER }}
+          file: ${{ env.STEP_FILE }}
+          vars: |
+            full_repo_name: ${{ github.repository }}
+
+      - name: Habilitar workflow do próximo passo
+        run: |
+          gh workflow enable "Step 2"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Desabilitar workflow atual
+        run: gh workflow disable "${{ github.workflow }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  dev-container:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    
+    container_name: github-spec-kit-dev
+    
+    volumes:
+      # Mount do workspace
+      - .:/workspace:cached
+      # Mount do Docker socket para executar containers dentro do container
+      - /var/run/docker.sock:/var/run/docker.sock
+    
+    ports:
+      # Backend API
+      - "5000:5000"  # HTTP
+      - "5001:5001"  # HTTPS
+      # Frontend Blazor
+      - "7000:7000"  # HTTP
+      - "7001:7001"  # HTTPS
+    
+    environment:
+      # .NET
+      - DOTNET_USE_POLLING_FILE_WATCHER=true
+      - DOTNET_CLI_HOME=/workspace/.dotnet
+      
+      # Python
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    
+    working_dir: /workspace
+    
+    command: /bin/bash
+    
+    stdin_open: true
+    tty: true
+    
+    # Capacidades de segurança para desenvolvimento
+    cap_add:
+      - SYS_PTRACE
+    
+    security_opt:
+      - seccomp=unconfined
+    
+    networks:
+      - dev-network
+
+networks:
+  dev-network:
+    driver: bridge
