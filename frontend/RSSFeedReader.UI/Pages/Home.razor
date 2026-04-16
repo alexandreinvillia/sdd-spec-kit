@@ -1,0 +1,13 @@
+﻿@page "/"
+@inject NavigationManager Navigation
+
+<PageTitle>Redirecionando...</PageTitle>
+
+<p>Redirecionando para assinaturas...</p>
+
+@code {
+    protected override void OnInitialized()
+    {
+        Navigation.NavigateTo("/subscriptions", replace: true);
+    }
+}
