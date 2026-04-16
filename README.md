@@ -1,50 +1,37 @@
-# GitHub Spec Kit desenvolvimento orientado por especificações.
+<div align="center">
 
-<img src="https://octodex.github.com/images/Professortocat_v2.png" align="right" height="200px" />
+# 🎉 Congratulations alexandreinvillia! 🎉
 
-Hey alexandreinvillia!
+<img src="https://octodex.github.com/images/welcometocat.png" height="200px" />
 
-Mona aqui. Terminei de preparar seu exercício. Espero que goste! 💚
+### 🌟 You've successfully completed the exercise! 🌟
 
-Lembre-se, o exercício é no seu ritmo, então sinta-se à vontade para fazer uma pausa! ☕️
+## 🚀 Share Your Success!
 
-[![](https://img.shields.io/badge/Ir%20para%20o%20Exerc%C3%ADcio-%E2%86%92-1f883d?style=for-the-badge&logo=github&labelColor=197935)](https://github.com/alexandreinvillia/sdd-spec-kit/issues/1)
+**Show off your new skills and inspire others!**
 
----
+<a href="https://twitter.com/intent/tweet?text=I%20just%20completed%20the%20%22GitHub%20Spec%20Kit%20desenvolvimento%20orientado%20por%20especifica%C3%A7%C3%B5es.%22%20GitHub%20Skills%20hands-on%20exercise!%20%F0%9F%8E%89%0A%0Ahttps%3A%2F%2Fgithub.com%2Falexandreinvillia%2Fsdd-spec-kit%0A%0A%23GitHubSkills%20%23OpenSource%20%23GitHubLearn" target="_blank" rel="noopener noreferrer">
+  <img src="https://img.shields.io/badge/Share%20on%20X-1da1f2?style=for-the-badge&logo=x&logoColor=white" alt="Share on X" />
+</a>
+<a href="https://bsky.app/intent/compose?text=I%20just%20completed%20the%20%22GitHub%20Spec%20Kit%20desenvolvimento%20orientado%20por%20especifica%C3%A7%C3%B5es.%22%20GitHub%20Skills%20hands-on%20exercise!%20%F0%9F%8E%89%0A%0Ahttps%3A%2F%2Fgithub.com%2Falexandreinvillia%2Fsdd-spec-kit%0A%0A%23GitHubSkills%20%23OpenSource%20%23GitHubLearn" target="_blank" rel="noopener noreferrer">
+  <img src="https://img.shields.io/badge/Share%20on%20Bluesky-0085ff?style=for-the-badge&logo=bluesky&logoColor=white" alt="Share on Bluesky" />
+</a>
+<a href="https://www.linkedin.com/feed/?shareActive=true&text=I%20just%20completed%20the%20%22GitHub%20Spec%20Kit%20desenvolvimento%20orientado%20por%20especifica%C3%A7%C3%B5es.%22%20GitHub%20Skills%20hands-on%20exercise!%20%F0%9F%8E%89%0A%0Ahttps%3A%2F%2Fgithub.com%2Falexandreinvillia%2Fsdd-spec-kit%0A%0A%23GitHubSkills%20%23OpenSource%20%23GitHubLearn" target="_blank" rel="noopener noreferrer">
+  <img src="https://img.shields.io/badge/Share%20on%20LinkedIn-0077b5?style=for-the-badge&logo=linkedin&logoColor=white" alt="Share on LinkedIn" />
+</a>
 
-## MVP de Assinaturas RSS
+### 🎯 What's Next?
 
-### Arquitetura
+**Keep the momentum going!**
 
-```text
-backend/RSSFeedReader.Api          → ASP.NET Core Web API (http://localhost:5151)
-frontend/RSSFeedReader.UI          → Blazor WebAssembly  (http://localhost:5213)
-shared/RSSFeedReader.Contracts     → Modelos compartilhados (Subscription, ErrorResponse)
-tests/RSSFeedReader.Api.Tests      → Testes unitários da API
-tests/RSSFeedReader.Api.IntegrationTests → Testes de integração dos endpoints
-tests/RSSFeedReader.UI.Tests       → Testes do cliente HTTP do frontend
-```
+[![](https://img.shields.io/badge/Return%20to%20Exercise-%E2%86%92-1f883d?style=for-the-badge&logo=github&labelColor=197935)](https://github.com/alexandreinvillia/sdd-spec-kit/issues/1)
+[![GitHub Skills](https://img.shields.io/badge/Explore%20GitHub%20Skills-000000?style=for-the-badge&logo=github&logoColor=white)](https://learn.github.com/skills)
 
-### Como executar
+*There's no better way to learn than building things!* 🚀
 
-**Pré-requisitos**: .NET 8 SDK.
-
-```bash
-# Backend (porta 5151)
-dotnet run --project backend/RSSFeedReader.Api
-
-# Frontend (porta 5213)
-dotnet run --project frontend/RSSFeedReader.UI
-```
-
-Com ambos rodando, acesse `http://localhost:5213` e adicione URLs de feeds RSS.
-
-### Testes
-
-```bash
-dotnet test
-```
+</div>
 
 ---
 
 &copy; 2025 GitHub &bull; [Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/code_of_conduct.md) &bull; [MIT License](https://gh.io/mit)
+
