@@ -1,0 +1,88 @@
+openapi: 3.0.3
+info:
+  title: RSS Feed Reader Subscriptions API
+  version: 0.1.0
+  description: API minima do MVP para criar e listar assinaturas de feed.
+servers:
+  - url: http://localhost:5151/api
+paths:
+  /subscriptions:
+    get:
+      summary: Listar assinaturas
+      operationId: listSubscriptions
+      responses:
+        "200":
+          description: Lista de assinaturas retornada com sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Subscription"
+    post:
+      summary: Criar assinatura
+      operationId: createSubscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSubscriptionRequest"
+      responses:
+        "201":
+          description: Assinatura criada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+        "400":
+          description: URL inválida
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Assinatura duplicada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  schemas:
+    CreateSubscriptionRequest:
+      type: object
+      required:
+        - feedUrl
+      properties:
+        feedUrl:
+          type: string
+          format: uri
+          example: https://devblogs.microsoft.com/dotnet/feed/
+    Subscription:
+      type: object
+      required:
+        - id
+        - feedUrl
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        feedUrl:
+          type: string
+          format: uri
+        createdAt:
+          type: string
+          format: date-time
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        traceId:
+          type: string
