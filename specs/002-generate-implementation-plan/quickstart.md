@@ -35,9 +35,15 @@ Ajustar frontend/RSSFeedReader.UI/wwwroot/appsettings.json:
 
 ## 3. Verificar CORS no backend
 
-Permitir explicitamente a origem do frontend (exemplo local):
+Permitir explicitamente a origem do frontend. No `appsettings.json` do backend:
 
-- http://localhost:5213
+```json
+{
+  "AllowedOrigins": ["http://localhost:5213"]
+}
+```
+
+O CORS já está configurado para aceitar `http://localhost:5213` por padrão.
 
 ## 4. Subir frontend
 

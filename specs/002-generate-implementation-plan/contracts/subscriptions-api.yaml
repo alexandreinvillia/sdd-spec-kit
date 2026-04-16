@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
   title: RSS Feed Reader Subscriptions API
-  version: 0.1.0
-  description: API minima do MVP para criar e listar assinaturas de feed.
+  version: 0.2.0
+  description: API minima do MVP para criar e listar assinaturas de feed com erros semanticos.
 servers:
   - url: http://localhost:5151/api
 paths:
@@ -41,12 +41,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                invalidUrl:
+                  value:
+                    code: INVALID_URL
+                    message: A URL informada deve ser absoluta e usar HTTP ou HTTPS.
+                    traceId: 00-abc123
         "409":
           description: Assinatura duplicada
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                duplicateSubscription:
+                  value:
+                    code: DUPLICATE_SUBSCRIPTION
+                    message: A URL informada ja foi cadastrada.
+                    traceId: 00-def456
 components:
   schemas:
     CreateSubscriptionRequest:
@@ -82,6 +94,9 @@ components:
       properties:
         code:
           type: string
+          enum:
+            - INVALID_URL
+            - DUPLICATE_SUBSCRIPTION
         message:
           type: string
         traceId:
