@@ -4,11 +4,11 @@
 
 Hey alexandreinvillia!
 
-Mona here. I'm done preparing your exercise. Hope you enjoy! 💚
+Mona aqui. Terminei de preparar seu exercício. Espero que goste! 💚
 
-Remember, it's self-paced so feel free to take a break! ☕️
+Lembre-se, o exercício é no seu ritmo, então sinta-se à vontade para fazer uma pausa! ☕️
 
-[![](https://img.shields.io/badge/Go%20to%20Exercise-%E2%86%92-1f883d?style=for-the-badge&logo=github&labelColor=197935)](https://github.com/alexandreinvillia/sdd-spec-kit/issues/1)
+[![](https://img.shields.io/badge/Ir%20para%20o%20Exerc%C3%ADcio-%E2%86%92-1f883d?style=for-the-badge&logo=github&labelColor=197935)](https://github.com/alexandreinvillia/sdd-spec-kit/issues/1)
 
 ---
 
